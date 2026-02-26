@@ -1,81 +1,73 @@
 import pygame
-
-print( "hello")
-
-pygame.init()
-
-screen = pygame.display.set_mode((1280, 720))
-clock = pygame.time.Clock()
-
-running = True
-
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-player_vel = pygame.Vector2(0, 0)
-player_acc = pygame.Vector2(0, 0)
-
-speed = 7000
-
-player_size = 20
-
-dt = 0
-
-player_disabled = 0
-stun_time = 30
-
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    screen.fill("black")
-    
+import movement
+import main_menu
+import constants as c
+import render_level
+import esc_menu
+import helper as h
 
 
-    pygame.draw.circle(screen, "white", player_pos, player_size)    
-    
-    player_acc.x = -player_vel.x*5
-    player_acc.y = -player_vel.y*5
+def main():
+    pygame.init()
 
-    keys = pygame.key.get_pressed()
-    if player_disabled == 0:
-        if keys[pygame.K_w]:
-            player_acc.y += -speed 
-        if keys[pygame.K_s]:
-            player_acc.y += speed 
-        if keys[pygame.K_a]:
-            player_acc.x += -speed 
-        if keys[pygame.K_d]:
-            player_acc.x += speed
-    else:
-        player_disabled -= 1
+    #Setup Variables
+    font = pygame.font.Font(None, 55)
 
-    if player_pos.x < player_size or player_pos.x > screen.get_width() - player_size:
-        player_vel.x = -player_vel.x
-        player_disabled = stun_time
-    if player_pos.y < player_size or player_pos.y > screen.get_height() - player_size:
-        player_vel.y = -player_vel.y
-        player_disabled = stun_time
+    level = 0
+    room = 0
 
-    # if abs(player_vel.x) > 0:
-    #     player_vel.x += -1
-    # else:
-    #     player_vel.x = 0
+    player_position = pygame.Vector2(c.SCREEN_WIDTH/2, 0)
+    player_velocity = pygame.Vector2(0, 0)
+    player_acceleration = pygame.Vector2(0, 0)
+    player_hitbox = pygame.Rect(player_position.x, player_position.y, c.PLAYER_SIZE, c.PLAYER_SIZE)
 
-    # if player_vel.y > 0:
-    #     player_acc.y += -3
-    # else: 
-    #     player_acc.y = 0
 
-    player_vel.x += player_acc.x * dt
-    player_vel.y += player_acc.y * dt
+    mouse_position = pygame.Vector2(0, 0)
+    mouse_hitbox = pygame.Rect(mouse_position.x, mouse_position.y, c.MOUSE_SIZE, c.MOUSE_SIZE)
+    pygame.mouse.set_visible(False)
+
+    dt = 0
+    menu_open = 0
+
+    screen = pygame.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+    clock = pygame.time.Clock()
+    running = True
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == 27:
+                menu_open = (menu_open+1)%2
+            if event.type == pygame.QUIT:
+                running = False
         
+        if level == 0:
+            level = main_menu.main_menu(mouse_hitbox, screen, font)
 
-    player_pos.x += player_vel.x * dt
-    player_pos.y += player_vel.y * dt
+            if level != 0:
+                player_position, player_velocity, player_acceleration = h.reset_position(1)
 
-    pygame.display.flip()
+            pygame.display.flip()
+            dt = clock.tick(60) / 1000
+            continue
 
-    dt = clock.tick(60) / 1000
+        if menu_open:
+            platform_list = render_level.render(level, player_hitbox, screen, player_position)
+            menu_open, level = esc_menu.esc_menu(mouse_hitbox, screen, font, menu_open, level)
+            pygame.display.flip()
+            dt = clock.tick(60) / 1000
+            if menu_open == -1:
+                running = False
+                break
+            continue
+
+        platform_list = render_level.render(level, player_hitbox, screen, player_position)
+        player_hitbox, player_position, player_velocity, player_acceleration = movement.movement_handling(platform_list, player_hitbox, player_position, player_velocity, player_acceleration, dt)
+
+        #Display and update clock
+        pygame.display.flip()
+        dt = clock.tick(60) / 1000
 
 
-pygame.quit()
+if __name__ == "__main__":
+    main()
+    pygame.quit()
