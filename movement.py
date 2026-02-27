@@ -53,42 +53,21 @@ def update_position(player_pos, player_vel, player_acc, dt):
     if player_pos.x > c.SCREEN_WIDTH:
         player_pos.x = c.SCREEN_WIDTH
 
-
-#Collision detection with platform objects
-# def platform_handling(collision_rect, player_hitbox, player_position, player_velocity, player_acceleration, rect_list):
-#     ground_level = c.SCREEN_HEIGHT
-#     if collision_rect != -1:
-#         platform = rect_list[collision_rect]
-
-#         if player_hitbox.bottom - 20 < platform.top and player_velocity.y >= 0:
-#             ground_level = platform.top +1
-#             # ground_level = player_hitbox.bottom
-#         elif player_hitbox.x < platform.left:
-#             # print("player bot: ", player_hitbox.bottom, ", box top: ", rect_list[collision_rect].top, ", box right: ", rect_list[collision_rect].right)
-
-#             player_velocity.x = 0
-#             player_acceleration.x = 0
-#             player_position.x = platform.left - c.PLAYER_SIZE
-#         elif player_hitbox.x < platform.right:
-#             # print("player bot: ", player_hitbox.bottom, ", box top: ", rect_list[collision_rect].top, ", box right: ", rect_list[collision_rect].right)
-
-#             player_velocity.x = 0
-#             player_acceleration.x = 0
-#             player_position.x = platform.right + c.PLAYER_SIZE
-        
-#     return ground_level
-
-def movement_handling(platform_list, player_hitbox, player_position, player_velocity, player_acceleration, dt):
+def movement_handling(platform_list, player_hitbox, player_position, player_velocity, player_acceleration, dt, level, room):
     rect_list = []
     for platform in platform_list:
         rect_list.append(platform.rect)
 
-    collision_platform = player_hitbox.collidelist(rect_list)
+    collision_platforms = player_hitbox.collidelistall(rect_list)
 
-    if collision_platform == -1:
-        ground_level = c.SCREEN_HEIGHT
-    else: 
-        ground_level = platform_list[collision_platform].collide_platform(player_hitbox, player_position, player_velocity, player_acceleration)
+    ground_level = c.SCREEN_HEIGHT
+
+    if collision_platforms != -1:
+        for collision_platform in collision_platforms:
+            if platform_list[collision_platform].type == 2:
+                player_position, player_velocity, player_acceleration = h.reset_position(level, room)
+
+            ground_level = platform_list[collision_platform].collide_platform(player_hitbox, player_position, player_velocity, player_acceleration)
 
     on_ground = physics(player_position, player_velocity, player_acceleration, ground_level)
     keys = pygame.key.get_pressed()

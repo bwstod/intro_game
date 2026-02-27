@@ -29,7 +29,7 @@ def main():
     dt = 0
     menu_open = 0
 
-    screen = pygame.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT), pygame.FULLSCREEN)
     clock = pygame.time.Clock()
     running = True
 
@@ -44,7 +44,7 @@ def main():
             level = main_menu.main_menu(mouse_hitbox, screen, font)
 
             if level != "main":
-                player_position, player_velocity, player_acceleration = h.reset_position(1)
+                player_position, player_velocity, player_acceleration = h.reset_position(level, room)
                 level = "0"
                 room = "0"
 
@@ -63,7 +63,7 @@ def main():
             continue
 
         platform_list = render_level.render(level, room, player_hitbox, screen, player_position)
-        player_hitbox, player_position, player_velocity, player_acceleration = movement.movement_handling(platform_list, player_hitbox, player_position, player_velocity, player_acceleration, dt)
+        player_hitbox, player_position, player_velocity, player_acceleration = movement.movement_handling(platform_list, player_hitbox, player_position, player_velocity, player_acceleration, dt, level, room)
 
         #Display and update clock
         pygame.display.flip()

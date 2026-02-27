@@ -29,7 +29,7 @@ def mouse_handle(mouse_hitbox, screen, mouse_size):
     pygame.draw.rect(screen, "red", mouse_hitbox)
     return mouse_hitbox
 
-def reset_position(level):
+def reset_position(level, room):
     player_position = pygame.Vector2(c.SCREEN_WIDTH/2, 0)
     player_velocity = pygame.Vector2(0, 0)
     player_acceleration = pygame.Vector2(0, 0)

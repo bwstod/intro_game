@@ -10,7 +10,7 @@ sys.path.insert(0, parent_dir)
 import constants as c
 import helper as h
 
-from platform import Platform as p
+from platform_1 import Platform as p
 
 
 
@@ -42,7 +42,7 @@ def main():
 
     save = False
 
-    screen = pygame.display.set_mode((c.SCREEN_WIDTH + 400, c.SCREEN_HEIGHT + 100))
+    screen = pygame.display.set_mode((c.SCREEN_WIDTH + 400, c.SCREEN_HEIGHT + 100), pygame.FULLSCREEN)
     clock = pygame.time.Clock()
     running = True
 

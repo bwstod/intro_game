@@ -1,7 +1,7 @@
 import pygame
 import helper as h
 import constants as c
-from platform import Platform as p
+from platform_1 import Platform as p
 
 def render(level, room, player_hitbox, screen, player_position):
     #Background
