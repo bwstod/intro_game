@@ -15,7 +15,7 @@ def esc_menu(mouse_hitbox, screen, font, menu_open, level):
     if(main_menu_button.colliderect(mouse_hitbox)):
         main_menu_color = "pink"
         if(pygame.mouse.get_pressed(num_buttons=3)[0]):
-            level = 0
+            level = "main"
             menu_open = (menu_open+1)%2
 
     quit_color = "white"
@@ -33,6 +33,6 @@ def esc_menu(mouse_hitbox, screen, font, menu_open, level):
     h.text_render(esc_menu_colors, esc_menu_buttons, esc_menu_texts, esc_menu_text_x, esc_menu_text_y, screen)
     
     #Mouse handling
-    mouse_hitbox = h.mouse_handle(mouse_hitbox, screen)
+    mouse_hitbox = h.mouse_handle(mouse_hitbox, screen, c.MOUSE_SIZE)
 
     return menu_open, level

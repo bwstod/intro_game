@@ -23,9 +23,9 @@ def text_render(colors, buttons, text_surfs, text_offset_x, text_offset_y, scree
         pygame.draw.rect(screen, colors[i], button)
         screen.blit(text_surfs[i], (button.x + text_offset_x[i], button.y + text_offset_y[i]))
 
-def mouse_handle(mouse_hitbox, screen):
+def mouse_handle(mouse_hitbox, screen, mouse_size):
     mouse_position = pygame.mouse.get_pos()
-    mouse_hitbox.update(mouse_position[0] - c.MOUSE_SIZE, mouse_position[1] - c.MOUSE_SIZE, c.MOUSE_SIZE*2, c.MOUSE_SIZE*2)
+    mouse_hitbox.update(mouse_position[0] - mouse_size, mouse_position[1] - mouse_size, mouse_size*2, mouse_size*2)
     pygame.draw.rect(screen, "red", mouse_hitbox)
     return mouse_hitbox
 

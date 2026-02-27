@@ -13,8 +13,8 @@ def main():
     #Setup Variables
     font = pygame.font.Font(None, 55)
 
-    level = 0
-    room = 0
+    level = "main"
+    room = ""
 
     player_position = pygame.Vector2(c.SCREEN_WIDTH/2, 0)
     player_velocity = pygame.Vector2(0, 0)
@@ -40,18 +40,20 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         
-        if level == 0:
+        if level == "main":
             level = main_menu.main_menu(mouse_hitbox, screen, font)
 
-            if level != 0:
+            if level != "main":
                 player_position, player_velocity, player_acceleration = h.reset_position(1)
+                level = "0"
+                room = "0"
 
             pygame.display.flip()
             dt = clock.tick(60) / 1000
             continue
 
         if menu_open:
-            platform_list = render_level.render(level, player_hitbox, screen, player_position)
+            platform_list = render_level.render(level, room, player_hitbox, screen, player_position)
             menu_open, level = esc_menu.esc_menu(mouse_hitbox, screen, font, menu_open, level)
             pygame.display.flip()
             dt = clock.tick(60) / 1000
@@ -60,7 +62,7 @@ def main():
                 break
             continue
 
-        platform_list = render_level.render(level, player_hitbox, screen, player_position)
+        platform_list = render_level.render(level, room, player_hitbox, screen, player_position)
         player_hitbox, player_position, player_velocity, player_acceleration = movement.movement_handling(platform_list, player_hitbox, player_position, player_velocity, player_acceleration, dt)
 
         #Display and update clock
