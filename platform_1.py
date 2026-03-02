@@ -7,10 +7,12 @@ sys.path.insert(0, parent_dir)
 import constants as c
 
 class Platform:
-    def __init__(self, rect, type):
+    def __init__(self, rect, type, level="0", room="0"):
         self.rect = rect
         self.type = type
         # self.screen = screen
+        self.level = level
+        self.room = room
         pass
 
     type_colors = {1: c.PLATFORM_COLOR, 2: c.DANGER_COLOR, 3: c.GOAL_COLOR, 4: c.START_COLOR}
@@ -43,7 +45,7 @@ class Platform:
         width = self.rect.width
         height = self.rect.height
 
-        output_string = str(left) + " " + str(top) + " " + str(width) + " " + str(height) + " " + str(self.type) + "\n"
+        output_string = str(left) + " " + str(top) + " " + str(width) + " " + str(height) + " " + str(self.type) + " " + self.level + " " + self.room + "\n"
 
         return output_string
     

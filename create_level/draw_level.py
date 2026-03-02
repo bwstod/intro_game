@@ -35,14 +35,24 @@ def main():
 
     platform_type = 1
 
+    mouse_pressed = False
+
     level_input = False
     level = "0"
     room_input = False
     room = "0"
 
+    goal_input = False
+    next_level = "0"
+    next_room = "0"
+
+    start_input = False
+    prev_level = "0"
+    prev_room = "0"
+
     save = False
 
-    screen = pygame.display.set_mode((c.SCREEN_WIDTH + 400, c.SCREEN_HEIGHT + 100), pygame.FULLSCREEN)
+    screen = pygame.display.set_mode((c.SCREEN_WIDTH + 400, c.SCREEN_HEIGHT + 100))
     clock = pygame.time.Clock()
     running = True
 
@@ -51,31 +61,33 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pressed = True
                 if mouse_hitbox.centerx < c.SCREEN_WIDTH and mouse_hitbox.centery < c.SCREEN_HEIGHT:
                     if(start_bounding_box):
-                        temp_platform = p(platform_bounding_rect.copy(), platform_type)
+                        temp_level = next_level
+                        temp_room = next_room
+                        if platform_type == 4:
+                            temp_level = prev_level
+                            temp_room = prev_room
+                        temp_platform = p(platform_bounding_rect.copy(), platform_type, temp_level, temp_room)
                         platform_list.append(temp_platform)
                     else:
                         bounding_box_1 = mouse_hitbox.center
                     start_bounding_box = (start_bounding_box + 1)%2
             if level_input:
-                if event.type == pygame.KEYDOWN:
-                    if event.key == 8:
-                        level = level[:-1]
-                    elif event.key == 13:
-                        level_input = False
-                        break
-                    else:
-                        level += event.unicode
+                if goal_input:
+                    level_input, next_level = h.text_input(event, next_level)
+                elif start_input:
+                    level_input, prev_level = h.text_input(event, prev_level)
+                else:
+                    level_input, level = h.text_input(event, level)
             if room_input:
-                if event.type == pygame.KEYDOWN:
-                    if event.key == 8:
-                        room = room[:-1]
-                    elif event.key == 13:
-                        room_input = False
-                        break
-                    else:
-                        room += event.unicode
+                if goal_input:
+                    room_input, next_room = h.text_input(event, next_room)
+                elif start_input:
+                    room_input, prev_room = h.text_input(event, prev_room)
+                else:
+                    room_input, room = h.text_input(event, room)
 
 
         screen.fill("black")
@@ -90,25 +102,53 @@ def main():
         clear_button, clear_text = h.text_create(300, c.SCREEN_HEIGHT + 10, 150, 80, "Clear", "Black", font)
         level_input_button, level_input_text = h.text_create(c.SCREEN_WIDTH - 150, c.SCREEN_HEIGHT + 10, 250, 80, "Level Input", "Black", font)
         room_input_button, room_input_text = h.text_create(c.SCREEN_WIDTH + 110, c.SCREEN_HEIGHT + 10, 250, 80, "Room Input", "Black", font)
+        undo_button, undo_text = h.text_create(500, c.SCREEN_HEIGHT + 10, 120, 80, "Undo", "Black", font)
 
-        platform_button, platform_text = h.text_create(c.SCREEN_WIDTH + 10, 50, 380, 100, "Platform", c.PLATFORM_COLOR, font)
-        danger_button, danger_text = h.text_create(c.SCREEN_WIDTH + 10, 200, 380, 100, "Danger", c.DANGER_COLOR, font)
-        goal_button, goal_text = h.text_create(c.SCREEN_WIDTH + 10, 350, 380, 100, "Goal", c.GOAL_COLOR, font)
-        start_button, start_text = h.text_create(c.SCREEN_WIDTH + 10, 500, 380, 100, "Start", c.START_COLOR, font)
+        platform_button, platform_text = h.text_create(c.SCREEN_WIDTH + 10, 10, 380, 100, "Platform", c.PLATFORM_COLOR, font)
+        danger_button, danger_text = h.text_create(c.SCREEN_WIDTH + 10, 120, 380, 100, "Danger", c.DANGER_COLOR, font)
+        goal_button, goal_text = h.text_create(c.SCREEN_WIDTH + 10, 230, 380, 100, "Goal", c.GOAL_COLOR, font)
+        start_button, start_text = h.text_create(c.SCREEN_WIDTH + 10, 450, 380, 100, "Start", c.START_COLOR, font)
         
-        texts = [exit_text, save_text, clear_text, level_input_text, room_input_text, platform_text, danger_text, goal_text, start_text]
+        texts = [exit_text, save_text, clear_text, level_input_text, room_input_text, undo_text, platform_text, danger_text, goal_text, start_text]
         colors = ["white"] * len(texts)
-        buttons = [exit_button, save_button, clear_button, level_input_button, room_input_button, platform_button, danger_button, goal_button, start_button]
-        text_offset_x = [10, 10, 10, 10, 10, 100, 100, 100, 100]
-        text_offset_y = [25, 25, 25, 25, 25, 30, 30, 30, 30]
+        buttons = [exit_button, save_button, clear_button, level_input_button, room_input_button, undo_button, platform_button, danger_button, goal_button, start_button]
+        text_offset_x = [10, 10, 10, 10, 10, 10, 100, 100, 100, 100]
+        text_offset_y = [25, 25, 25, 25, 25, 25, 30, 30, 30, 30]
 
-        colors[platform_type+4] = (255,192,150)
+        colors[platform_type+5] = (255,192,150)
         colors[3] = (255,192,150) if level_input else "white"
         colors[4] = (255,192,150) if room_input else "white"
 
-        level_button, level_text = h.text_create(500, c.SCREEN_HEIGHT + 10, 50, 50, "Level: " + level, "White", font)
-        room_button, room_text = h.text_create(500, c.SCREEN_HEIGHT + 50, 50, 50, "Room: " + room, "White", font)
-        h.text_render(["black", "black"], [level_button, room_button], [level_text, room_text], [0, 0], [0, 0], screen)
+
+        input_text_colors = ["white", "white", "white", "white", "white", "white"]
+
+        if(level_input):
+            if(goal_input):
+                input_text_colors[2] = (255,192,150)
+            elif(start_input):
+                input_text_colors[4] = (255,192,150)
+            else: 
+                input_text_colors[0] = (255,192,150)
+        
+        if(room_input):
+            if(goal_input):
+                input_text_colors[3] = (255,192,150)
+            elif(start_input):
+                input_text_colors[5] = (255,192,150)
+            else:
+                input_text_colors[1] = (255,192,150)
+
+        level_button, level_text = h.text_create(700, c.SCREEN_HEIGHT + 10, 50, 50, "Level: " + level, input_text_colors[0], font)
+        room_button, room_text = h.text_create(700, c.SCREEN_HEIGHT + 50, 50, 50, "Room: " + room, input_text_colors[1], font)
+        next_level_button, next_level_text = h.text_create(c.SCREEN_WIDTH + 10, 340, 380, 50, "Next Level: " + next_level, input_text_colors[2], font)
+        next_room_button, next_room_text = h.text_create(c.SCREEN_WIDTH + 10, 390, 380, 50, "Next Room: " + next_room, input_text_colors[3], font)
+
+        prev_level_button, prev_level_text = h.text_create(c.SCREEN_WIDTH + 10, 560, 380, 50, "Prev Level: " + prev_level, input_text_colors[4], font)
+        prev_room_button, prev_room_text = h.text_create(c.SCREEN_WIDTH + 10, 610, 380, 50, "Prev Room: " + prev_room, input_text_colors[5], font)
+        
+
+        h.text_render(["black", "black", "black", "black", "black", "black"], [level_button, room_button, next_level_button, next_room_button, prev_level_button, prev_room_button], 
+                      [level_text, room_text, next_level_text, next_room_text, prev_level_text, prev_room_text], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], screen)
 
 
         for i, text_button in enumerate(buttons):
@@ -128,12 +168,26 @@ def main():
                     elif i == 4:
                         level_input = False
                         room_input = True
+                    elif i == 5:
+                        if(mouse_pressed):
+                            platform_list.pop()
                     else:
-                        platform_type = i - 4
+                        platform_type = i - 5
                             
                         
         h.text_render(colors, buttons, texts, text_offset_x, text_offset_y, screen)
 
+        if platform_type == 3:
+            goal_input = True
+        else:
+            goal_input = False
+
+        if platform_type == 4:
+            start_input = True
+        else:
+            start_input = False
+
+        
 
         #Creating platforms
         
@@ -174,6 +228,7 @@ def main():
 
             running = False
 
+        mouse_pressed = False
         #Display and update clock
         pygame.display.flip()
         dt = clock.tick(60) / 1000
