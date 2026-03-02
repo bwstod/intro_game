@@ -27,6 +27,7 @@ def mouse_handle(mouse_hitbox, screen, mouse_size):
     pygame.draw.rect(screen, "red", mouse_hitbox)
     return mouse_hitbox
 
+#TODO: POSSIBLY MAKE A PART OF PLAYER CLASS
 def reset_position():
     for start_platform in g.starting_platform_list:
         if start_platform.level == g.prev_level and start_platform.room == g.prev_room:

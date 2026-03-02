@@ -1,3 +1,5 @@
+import constants as c
+
 level = "main"
 room = ""
 
@@ -10,3 +12,5 @@ platform_list = []
 starting_platform_list = []
 
 dt = 0
+
+ground_level = c.SCREEN_HEIGHT
