@@ -1,11 +1,12 @@
 import pygame
-import movement
-import main_menu
+# import Old.movement as movement
+import Menus.main_menu as main_menu
 import constants as c
 import render_level
-import esc_menu
+import Menus.esc_menu as esc_menu
 import helper as h
 import globals as g
+from Class_Definitions.player_ import Player as p
 
 
 def main():
@@ -14,23 +15,13 @@ def main():
     #Setup Variables
     font = pygame.font.Font(None, 55)
 
-    # level = "main"
-    # room = ""
-
-    player_position = pygame.Vector2(c.SCREEN_WIDTH/2, 0)
-    player_velocity = pygame.Vector2(0, 0)
-    player_acceleration = pygame.Vector2(0, 0)
-    player_hitbox = pygame.Rect(player_position.x, player_position.y, c.PLAYER_SIZE, c.PLAYER_SIZE)
-
+    main_player = p()
 
     mouse_position = pygame.Vector2(0, 0)
     mouse_hitbox = pygame.Rect(mouse_position.x, mouse_position.y, c.MOUSE_SIZE, c.MOUSE_SIZE)
     pygame.mouse.set_visible(False)
 
-    # dt = 0
     menu_open = 0
-
-    # new_level = True
 
     screen = pygame.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
     clock = pygame.time.Clock()
@@ -56,7 +47,7 @@ def main():
             continue
 
         if menu_open:
-            render_level.render(screen, player_position)
+            render_level.render(screen, main_player.pos)
             menu_open, g.level = esc_menu.esc_menu(mouse_hitbox, screen, font, menu_open, g.level)
             pygame.display.flip()
             g.dt = clock.tick(60) / 1000
@@ -65,16 +56,16 @@ def main():
                 break
             continue
 
-        render_level.render(screen, player_position)
+        render_level.render(screen, main_player.pos)
 
         if g.new_level:
-            player_position, player_hitbox = h.reset_position()
-            print("reset position new level", player_position)
+            main_player.reset_position()
+            print("reset position new level", main_player.pos)
 
         g.new_level = False
 
-        player_hitbox, player_position, player_velocity, player_acceleration = movement.movement_handling(player_hitbox, player_position, player_velocity, player_acceleration)
-        
+        main_player.movement_handle()
+
         #Display and update clock
         pygame.display.flip()
         g.dt = clock.tick(60) / 1000

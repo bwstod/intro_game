@@ -5,16 +5,18 @@ import globals as g
 import helper as h
 
 class Player:
-    def __init__(self, position, velocity, acceleration, hitbox):
+    def __init__(self, position=pygame.Vector2(c.SCREEN_WIDTH/2, 0), velocity=pygame.Vector2(0, 0), acceleration=pygame.Vector2(0, 0)):
         self.pos = position
         self.vel = velocity
         self.acc = acceleration
-        self.hit = hitbox
+        self.hit = pygame.Rect(position.x, position.y, c.PLAYER_SIZE, c.PLAYER_SIZE)
+        
         self.on_ground = True
 
         self.x_speed = c.SPEED
 
         self.size = c.PLAYER_SIZE
+
 
 
 
@@ -25,14 +27,14 @@ class Player:
         if self.vel.x > 500:
             self.vel.x = 500
             
-        self.pos.x += self.pos.x * g.dt
-        self.pos.y += self.pos.y * g.dt
+        self.pos.x += self.vel.x * g.dt
+        self.pos.y += self.vel.y * g.dt
 
         if self.pos.x < 0:
-            self.pos.x = 0
+            self.reset_position()
         
         if self.pos.x > c.SCREEN_WIDTH:
-            self.pos.x = c.SCREEN_WIDTH
+            self.reset_position()
 
     def input(self, keys):
         if self.on_ground:
@@ -58,6 +60,16 @@ class Player:
 
         return jump
     
+    def reset_position(self):
+        for start_platform in g.starting_platform_list:
+            if start_platform.level == g.prev_level and start_platform.room == g.prev_room:
+                self.pos = pygame.Vector2(start_platform.rect.x, start_platform.rect.top - self.size)
+                self.hit = pygame.Rect(self.pos.x, self.pos.y, self.size, self.size)
+                return
+            
+        print("failed to find a starting platform with same level and room")
+        return
+            
     def movement_handle(self):
         #TODO: UPDATE RECT_LIST TO BE GLOBAL
         rect_list = []
@@ -72,7 +84,7 @@ class Player:
             for collision_platform in collision_platforms:
                 if g.platform_list[collision_platform].type == 2:
                     print("dead", self.pos)
-                    self.pos, self.hit = h.reset_position()
+                    self.reset_position()
                     
                 if g.platform_list[collision_platform].type == 3:
                     print("new level", self.pos)
@@ -85,9 +97,9 @@ class Player:
 
                 g.ground_level = g.platform_list[collision_platform].collide_platform(self.hit, self.pos, self.vel, self.acc)
 
-        self.on_ground = self.physics(self.pos, self.vel, self.acc, g.ground_level)
+        self.on_ground = self.physics()
         keys = pygame.key.get_pressed()
-        self.player_input(keys)
+        self.input(keys)
 
         self.update_position()
         self.hit.update(self.pos.x - self.size, self.pos.y - self.size, self.size*2, self.size*2)

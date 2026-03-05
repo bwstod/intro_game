@@ -28,14 +28,14 @@ def mouse_handle(mouse_hitbox, screen, mouse_size):
     return mouse_hitbox
 
 #TODO: POSSIBLY MAKE A PART OF PLAYER CLASS
-def reset_position():
-    for start_platform in g.starting_platform_list:
-        if start_platform.level == g.prev_level and start_platform.room == g.prev_room:
-            player_position = pygame.Vector2(start_platform.rect.x, start_platform.rect.top - c.PLAYER_SIZE)
-            player_hitbox = pygame.Rect(player_position.x, player_position.y, c.PLAYER_SIZE, c.PLAYER_SIZE)
-            return player_position, player_hitbox
+# def reset_position():
+#     for start_platform in g.starting_platform_list:
+#         if start_platform.level == g.prev_level and start_platform.room == g.prev_room:
+#             player_position = pygame.Vector2(start_platform.rect.x, start_platform.rect.top - c.PLAYER_SIZE)
+#             player_hitbox = pygame.Rect(player_position.x, player_position.y, c.PLAYER_SIZE, c.PLAYER_SIZE)
+#             return player_position, player_hitbox
         
-    return KeyError
+#     return KeyError
 
 def text_input(event, text):
     continue_input = True

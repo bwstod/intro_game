@@ -10,7 +10,7 @@ sys.path.insert(0, parent_dir)
 import constants as c
 import helper as h
 
-from platform_1 import Platform as p
+from Class_Definitions.platform_ import Platform as p
 
 
 

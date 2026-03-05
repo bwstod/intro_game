@@ -1,7 +1,7 @@
 import pygame
 import helper as h
 import constants as c
-from platform_1 import Platform as p
+from Class_Definitions.platform_ import Platform as p
 import globals as g
 
 def file_read(level, room):
